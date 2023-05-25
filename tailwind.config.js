@@ -7,7 +7,10 @@ module.exports = {
 	],
 	theme: {
 		extend: {
-			backgroundImage: {},
+			fontFamily: {
+				body: "var(--font-dm-sans)",
+				heading: "var(--font-dm-serif)",
+			},
 		},
 	},
 	plugins: [],

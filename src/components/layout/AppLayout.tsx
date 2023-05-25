@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next//image";
 //
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCoins } from "@fortawesome/free-solid-svg-icons";
 interface IAppLayoutProps {
 	children: React.ReactNode;
 }
@@ -20,10 +22,18 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({ children }) => {
 	return (
 		<div className="grid grid-cols-[300px_1fr] h-screen max-h-screen">
 			<div className="flex flex-col text-white overflow-hidden">
-				<div className="bg-slate-800">
+				<div className="bg-slate-800 px-2">
 					<div>logo</div>
-					<div>cta</div>
-					<div>tokens</div>
+					<Link
+						href={"/post/new"}
+						className="bg-green-500 block tracking-wider w-full text-center text-white font-bold cursor-pointer uppercase px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+					>
+						New Post
+					</Link>
+					<Link href={"/token-topup"} className="block mt-2 text-center">
+						<FontAwesomeIcon icon={faCoins} className="text-yellow-500" />
+						<span className="pl-1">0 tokens available</span>
+					</Link>
 				</div>
 				<div className="flex-1 overflow-auto bg-gradient-to-b from-slate-800 to-cyan-800">
 					list of posts

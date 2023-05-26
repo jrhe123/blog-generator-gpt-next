@@ -89,7 +89,7 @@ const handler = async (
 		const titleContentResponse = await openAIApi.createChatCompletion({
 			model: "gpt-3.5-turbo",
 			temperature: 1,
-			max_tokens: 30,
+			max_tokens: 40,
 			messages: [
 				{
 					role: "system",
@@ -115,7 +115,7 @@ const handler = async (
 			{
 				model: "gpt-3.5-turbo",
 				temperature: 1,
-				max_tokens: 30,
+				max_tokens: 60,
 				messages: [
 					{
 						role: "system",

@@ -1,6 +1,10 @@
+import { withApiAuthRequired, getSession, Session } from "@auth0/nextjs-auth0";
 import type { NextApiRequest, NextApiResponse } from "next";
 // openAI
 import { Configuration, OpenAIApi } from "openai";
+// mongo
+import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
 
 type APIResponse = {
 	code: number;
@@ -11,6 +15,15 @@ type IPost = {
 	postContent: string;
 	title: string;
 	metaDescription: string;
+	topic?: string;
+	keywords?: string;
+	userId: ObjectId;
+	created: Date;
+};
+// https://stackoverflow.com/questions/70029584/casting-mongodb-document-to-typescript-interface
+type IUser = {
+	auth0Id: string;
+	availableTokens: number;
 };
 
 const handler = async (
@@ -24,27 +37,42 @@ const handler = async (
 		keywords = "top-gainers, top-losers, top U.S. stocks, monthly dividends",
 		cached = true,
 	}: { topic: string; keywords: string; cached: boolean } = req.body;
-	if (cached) {
-		return res.status(200).json({
-			code: 0,
-			post: {
-				postContent:
-					"<p><strong>Nasdaq</strong>: Get the Latest Info on Top U.S. Stocks and Their Monthly Dividends</p><p>Gain insight on the top-gaining and top-losing stocks on Nasdaq. Knowing the stocks that are gaining and losing can help you make informed and profitable decisions. That's why Nasdaq provides a wealth of information on U.S. stocks, from trading activities to company profiles and even monthly dividend information. Nasdaq is your go-to resource for all the information you need to stay on top of the stock market.</p><p>The Nasdaq exchange is home to the majority of top U.S. stocks, both blue-chip stalwarts and smaller companies. Nasdaq offers details on each stock's monthly dividend yields, current market prices, trading volume, and other pertinent information. This sneak peak helps investors spot the top-gaining stocks in terms of price and dividends so they can make informed investment decisions.</p><p>Nasdaq provides detailed insight on the performance of U.S. stocks, which helps investors stay informed and make the most of their investments. With Nasdaq, you can identify the top-gaining and top-losing stocks with their monthly dividend yields, allowing for an easy way to reach your financial goals. Make Nasdaq your go-to source for all the latest stock market news.</p>",
-				title:
-					"Nasdaq: Get the Latest Info on Top U.S. Stocks and Their Monthly Dividends",
-				metaDescription:
-					"Gain insight on the top-gaining and top-losers stocks on Nasdaq and stay informed about the performance of U.S. stocks with monthly dividend yields. Nasdaq is your go-to source of information for all the latest stock market news.",
-			},
-		});
-	}
-	const config = new Configuration({
-		apiKey: process.env.OPENAI_API_KEY,
-	});
-	const openAIApi = new OpenAIApi(config);
+
 	try {
-		console.log("!!!! call api now");
-		console.log("!!!! call api now");
-		console.log("!!!! call api now");
+		// auth0
+		const session = await getSession(req, res);
+		const { user } = session as Session;
+		// db
+		const client = await clientPromise;
+		const db = client.db("Blog");
+		const userProfile = await db.collection<IUser>("users").findOne({
+			auth0Id: user.sub,
+		});
+		if (!userProfile?.availableTokens) {
+			return res.status(403);
+		}
+		//
+		if (cached) {
+			return res.status(200).json({
+				code: 0,
+				post: {
+					postContent:
+						"<p><strong>Nasdaq</strong>: Get the Latest Info on Top U.S. Stocks and Their Monthly Dividends</p><p>Gain insight on the top-gaining and top-losing stocks on Nasdaq. Knowing the stocks that are gaining and losing can help you make informed and profitable decisions. That's why Nasdaq provides a wealth of information on U.S. stocks, from trading activities to company profiles and even monthly dividend information. Nasdaq is your go-to resource for all the information you need to stay on top of the stock market.</p><p>The Nasdaq exchange is home to the majority of top U.S. stocks, both blue-chip stalwarts and smaller companies. Nasdaq offers details on each stock's monthly dividend yields, current market prices, trading volume, and other pertinent information. This sneak peak helps investors spot the top-gaining stocks in terms of price and dividends so they can make informed investment decisions.</p><p>Nasdaq provides detailed insight on the performance of U.S. stocks, which helps investors stay informed and make the most of their investments. With Nasdaq, you can identify the top-gaining and top-losing stocks with their monthly dividend yields, allowing for an easy way to reach your financial goals. Make Nasdaq your go-to source for all the latest stock market news.</p>",
+					title:
+						"Nasdaq: Get the Latest Info on Top U.S. Stocks and Their Monthly Dividends",
+					metaDescription:
+						"Gain insight on the top-gaining and top-losers stocks on Nasdaq and stay informed about the performance of U.S. stocks with monthly dividend yields. Nasdaq is your go-to source of information for all the latest stock market news.",
+					topic,
+					keywords,
+					userId: userProfile._id,
+					created: new Date(),
+				},
+			});
+		}
+		const config = new Configuration({
+			apiKey: process.env.OPENAI_API_KEY,
+		});
+		const openAIApi = new OpenAIApi(config);
 
 		// keywords: top-gainers, top-losers, top U.S. stocks, monthly dividends
 		// const prompt =
@@ -160,13 +188,30 @@ const handler = async (
 		// text = text.substr(indexOfBegin);
 		// const parsedData: IPost = JSON.parse(text.split("\n").join(""));
 
+		// db
+		await db.collection<IUser>("users").updateOne(
+			{
+				auth0Id: user.sub,
+			},
+			{
+				$inc: {
+					availableTokens: -1,
+				},
+			}
+		);
+		const result = {
+			postContent: postContent || "",
+			title: titleContent || "",
+			metaDescription: metaDescriptionContent || "",
+			topic,
+			keywords,
+			userId: userProfile._id,
+			created: new Date(),
+		};
+		const post = await db.collection<IPost>("posts").insertOne(result);
 		return res.status(200).json({
 			code: 0,
-			post: {
-				postContent: postContent || "",
-				title: titleContent || "",
-				metaDescription: metaDescriptionContent || "",
-			},
+			post: result,
 		});
 	} catch (error) {
 		console.log("error: ", error);
@@ -174,4 +219,4 @@ const handler = async (
 	}
 };
 
-export default handler;
+export default withApiAuthRequired(handler);

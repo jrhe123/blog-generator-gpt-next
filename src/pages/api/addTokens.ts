@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 // auth0
-import { getSession, Session } from "@auth0/nextjs-auth0";
+import { getSession, Session, withApiAuthRequired } from "@auth0/nextjs-auth0";
 // mongo
 import clientPromise from "@/lib/mongodb";
 
@@ -49,4 +49,4 @@ const handler = async (
 	}
 };
 
-export default handler;
+export default withApiAuthRequired(handler);

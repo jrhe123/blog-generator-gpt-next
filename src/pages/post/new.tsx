@@ -28,7 +28,7 @@ const NewPost: NextPageWithLayout = (props) => {
 				body: JSON.stringify({
 					topic,
 					keywords,
-					cached: true,
+					cached: false,
 				}),
 			});
 			const jsonResponse: {

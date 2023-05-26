@@ -11,8 +11,29 @@ type NextPageWithLayout = NextPage<ITokenTopupProps> & {
 };
 
 const TokenTopup: NextPageWithLayout = (props) => {
-	console.log("props: ", props);
-	return <div>TokenTopup</div>;
+	const handleAddToken = async (
+		e: React.MouseEvent<HTMLElement, MouseEvent>
+	) => {
+		e.preventDefault();
+		const response = await fetch(`/api/addTokens`, {
+			method: "POST",
+			headers: {
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({}),
+		});
+
+		console.log("response: ", response);
+	};
+
+	return (
+		<div>
+			<p>token topup</p>
+			<button className="btn" onClick={handleAddToken}>
+				Add tokens
+			</button>
+		</div>
+	);
 };
 
 TokenTopup.getLayout = function getLayout(page, pageProps) {

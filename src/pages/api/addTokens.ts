@@ -3,10 +3,17 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession, Session, withApiAuthRequired } from "@auth0/nextjs-auth0";
 // mongo
 import clientPromise from "@/lib/mongodb";
+// stripe
+import stripeInit from "stripe";
+
+const stripe = new stripeInit(process.env.STRIPE_SECRET_KEY + "", {
+	apiVersion: "2022-11-15",
+});
 
 type APIResponse = {
 	code: number;
 	message?: string;
+	session?: stripeInit.Response<stripeInit.Checkout.Session>;
 };
 
 const handler = async (
@@ -39,9 +46,24 @@ const handler = async (
 				upsert: true,
 			}
 		);
-
+		// stripe
+		const lineItems = [
+			{
+				price: process.env.STRIPE_PRODUCT_PRICE_ID,
+				quantity: 1,
+			},
+		];
+		const protocol =
+			process.env.NODE_ENV === "development" ? "http://" : "https://";
+		const host = req.headers.host;
+		const checkoutSession = await stripe.checkout.sessions.create({
+			line_items: lineItems,
+			mode: "payment",
+			success_url: `${protocol}${host}/success`,
+		});
 		return res.status(200).json({
 			code: 0,
+			session: checkoutSession,
 		});
 	} catch (error) {
 		console.log("error: ", error);

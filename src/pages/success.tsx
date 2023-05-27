@@ -5,37 +5,21 @@ import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { AppLayout } from "../components/layout";
 import getAppProps from "@/utils/getAppProps";
 
-interface ITokenTopupProps {}
+interface ISuccessProps {}
 
-type NextPageWithLayout = NextPage<ITokenTopupProps> & {
+type NextPageWithLayout = NextPage<ISuccessProps> & {
 	getLayout?: (page: ReactNode, pageProps: any) => ReactNode;
 };
 
-const TokenTopup: NextPageWithLayout = (props) => {
-	const handleAddToken = async (
-		e: React.MouseEvent<HTMLElement, MouseEvent>
-	) => {
-		e.preventDefault();
-		const response = await fetch(`/api/addTokens`, {
-			method: "POST",
-			headers: {
-				"content-type": "application/json",
-			},
-			body: JSON.stringify({}),
-		});
-	};
-
+const Success: NextPageWithLayout = (props) => {
 	return (
 		<div>
-			<p>token topup</p>
-			<button className="btn" onClick={handleAddToken}>
-				Add tokens
-			</button>
+			<p>Thank you for your purchase!</p>
 		</div>
 	);
 };
 
-TokenTopup.getLayout = function getLayout(page, pageProps) {
+Success.getLayout = function getLayout(page, pageProps) {
 	return <AppLayout {...pageProps}>{page}</AppLayout>;
 };
 
@@ -48,4 +32,4 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 	},
 });
 
-export default TokenTopup;
+export default Success;

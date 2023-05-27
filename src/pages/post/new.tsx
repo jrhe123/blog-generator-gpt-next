@@ -1,8 +1,10 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { FormEventHandler, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { useRouter } from "next/router";
 // layout
 import { AppLayout } from "../../components/layout";
+import { ObjectId } from "mongodb";
 
 interface INewPostProps {}
 
@@ -11,10 +13,11 @@ type NextPageWithLayout = NextPage<INewPostProps> & {
 };
 
 const NewPost: NextPageWithLayout = (props) => {
+	const router = useRouter();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [topic, setTopic] = useState<string>("");
 	const [keywords, setKeywords] = useState<string>("");
-	const [postContent, setPostContent] = useState<string>("");
+	// const [postContent, setPostContent] = useState<string>("");
 
 	const handleCreatePost = async (e: React.FormEvent) => {
 		try {
@@ -38,11 +41,13 @@ const NewPost: NextPageWithLayout = (props) => {
 					title: string;
 					metaDescription: string;
 				};
+				postId?: ObjectId;
 				message?: string;
 			} = await response.json();
-			if (jsonResponse.code === 0) {
-				const post = jsonResponse.post;
-				setPostContent(post?.postContent || "");
+			if (jsonResponse.code === 0 && jsonResponse.postId) {
+				// const post = jsonResponse.post;
+				// setPostContent(post?.postContent || "");
+				router.push(`/post/${jsonResponse.postId}`);
 			}
 		} catch (error) {
 			console.log("error: ", error);
@@ -82,12 +87,12 @@ const NewPost: NextPageWithLayout = (props) => {
 					Generate
 				</button>
 			</form>
-			<div
+			{/* <div
 				className="max-w-screen-sm p-10"
 				dangerouslySetInnerHTML={{
 					__html: postContent,
 				}}
-			/>
+			/> */}
 		</div>
 	);
 };

@@ -9,6 +9,7 @@ import { ObjectId } from "mongodb";
 type APIResponse = {
 	code: number;
 	post?: IPost;
+	postId?: ObjectId;
 	message?: string;
 };
 type IPost = {
@@ -211,7 +212,8 @@ const handler = async (
 		const post = await db.collection<IPost>("posts").insertOne(result);
 		return res.status(200).json({
 			code: 0,
-			post: result,
+			// post: result,
+			postId: post.insertedId,
 		});
 	} catch (error) {
 		console.log("error: ", error);

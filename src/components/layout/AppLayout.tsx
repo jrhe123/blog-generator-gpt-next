@@ -62,7 +62,7 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({ children }) => {
 					)}
 				</div>
 			</div>
-			<div>{children}</div>
+			{children}
 		</div>
 	);
 };

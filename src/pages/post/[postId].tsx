@@ -8,6 +8,7 @@ import { AppLayout } from "../../components/layout";
 // db
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import getAppProps from "@/utils/getAppProps";
 
 interface IPostDetailProps {
 	postContent: string;
@@ -66,6 +67,7 @@ PostDetail.getLayout = function getLayout(page, pageProps) {
 
 export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 	getServerSideProps: async (ctx) => {
+		const props = await getAppProps(ctx);
 		const session = await getSession(ctx.req, ctx.res);
 		const { user } = session as Session;
 		const client = await clientPromise;
@@ -92,6 +94,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 				metaDescription: post.metaDescription,
 				keywords: post.keywords,
 				topic: post.topic,
+				...props,
 			},
 		};
 	},

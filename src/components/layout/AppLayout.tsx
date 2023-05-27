@@ -10,6 +10,16 @@ import { Logo } from "../logo";
 
 interface IAppLayoutProps {
 	children: React.ReactNode;
+	availableTokens: number;
+	posts: {
+		postContent: string;
+		title: string;
+		metaDescription: string;
+		keywords: string;
+		topic: string;
+		_id: string;
+	}[];
+	postId: string | null;
 }
 
 /**
@@ -18,7 +28,12 @@ interface IAppLayoutProps {
  * 2. https://github.com/auth0/nextjs-auth0/issues/597
  */
 
-export const AppLayout: NextPage<IAppLayoutProps> = ({ children }) => {
+export const AppLayout: NextPage<IAppLayoutProps> = ({
+	children,
+	availableTokens,
+	posts,
+	postId,
+}) => {
 	const { user } = useUser();
 	return (
 		<div className="grid grid-cols-[300px_1fr] h-screen max-h-screen">
@@ -30,11 +45,21 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({ children }) => {
 					</Link>
 					<Link href={"/token-topup"} className="block mt-2 text-center">
 						<FontAwesomeIcon icon={faCoins} className="text-yellow-500" />
-						<span className="pl-1">0 tokens available</span>
+						<span className="pl-1">{availableTokens} tokens available</span>
 					</Link>
 				</div>
-				<div className="flex-1 overflow-auto bg-gradient-to-b from-slate-800 to-cyan-800">
-					list of posts
+				<div className="px-4 flex-1 overflow-auto bg-gradient-to-b from-slate-800 to-cyan-800">
+					{posts.map((po) => (
+						<Link
+							className={`py-1 border border-white/0 text-ellipsis block overflow-hidden whitespace-nowrap my-1 px-2 bg-white/10 cursor-pointer rounded-sm ${
+								postId === po._id ? "bg-white/20 border-white" : ""
+							}`}
+							key={po._id}
+							href={`/post/${po._id}`}
+						>
+							{po.title}
+						</Link>
+					))}
 				</div>
 				<div className="bg-cyan-800 flex items-center gap-2 border-t border-t-black/50 h-20 px-2">
 					{!!user ? (

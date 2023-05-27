@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 // layout
 import { AppLayout } from "../../components/layout";
 import { ObjectId } from "mongodb";
+import getAppProps from "@/utils/getAppProps";
 
 interface INewPostProps {}
 
@@ -103,8 +104,9 @@ NewPost.getLayout = function getLayout(page, pageProps) {
 
 export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 	getServerSideProps: async (ctx) => {
+		const props = await getAppProps(ctx);
 		return {
-			props: {},
+			props,
 		};
 	},
 });

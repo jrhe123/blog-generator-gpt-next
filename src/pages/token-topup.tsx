@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 // layout
 import { AppLayout } from "../components/layout";
+import getAppProps from "@/utils/getAppProps";
 
 interface ITokenTopupProps {}
 
@@ -42,8 +43,9 @@ TokenTopup.getLayout = function getLayout(page, pageProps) {
 
 export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 	getServerSideProps: async (ctx) => {
+		const props = await getAppProps(ctx);
 		return {
-			props: {},
+			props,
 		};
 	},
 });

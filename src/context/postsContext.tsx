@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useState } from "react";
+import React, { ReactNode, useCallback, useReducer, useState } from "react";
 
 /**
  * Create your context
@@ -40,20 +40,81 @@ const PostsContext = React.createContext<IPostsContextType>(
 
 export default PostsContext;
 
-export const PostsProvider = ({ children }: { children: ReactNode }) => {
-	const [posts, setPosts] = useState<IPost[]>([]);
-	const [noMorePosts, setNoMorePosts] = useState<boolean>(false);
+/**
+ * use reducer
+ * https://dev.to/elisealcala/react-context-with-usereducer-and-typescript-4obm
+ */
+type ActionMap<M extends { [index: string]: any }> = {
+	[Key in keyof M]: M[Key] extends undefined
+		? {
+				type: Key;
+		  }
+		: {
+				type: Key;
+				payload: M[Key];
+		  };
+};
+enum PostTypes {
+	ADD_POSTS = "ADD_POSTS",
+	DELETE_POST = "DELETE_POST",
+}
+type PostPayload = {
+	[PostTypes.ADD_POSTS]: {
+		posts: IPost[];
+	};
+	[PostTypes.DELETE_POST]: {
+		postId: string;
+	};
+};
+type PostActions = ActionMap<PostPayload>[keyof ActionMap<PostPayload>];
 
-	const setPostsFromSSR = useCallback((postsFromSSR: IPost[] = []) => {
-		setPosts((value) => {
-			const newPosts = [...value];
-			postsFromSSR.forEach((post) => {
+const postsReducer = (
+	state: {
+		posts: IPost[];
+	},
+	action: PostActions
+) => {
+	let newPosts: IPost[] = [];
+	switch (action.type) {
+		case PostTypes.ADD_POSTS:
+			newPosts = [...state.posts];
+			action.payload.posts.forEach((post) => {
 				const exists = newPosts.find((item) => item._id === post._id);
 				if (!exists) {
 					newPosts.push(post);
 				}
 			});
-			return newPosts;
+			return {
+				posts: newPosts,
+			};
+		case PostTypes.DELETE_POST:
+			state.posts.forEach((post) => {
+				if (post._id !== action.payload.postId) {
+					newPosts.push(post);
+				}
+			});
+			return {
+				posts: newPosts,
+			};
+		default:
+			return state;
+	}
+};
+const initialState = {
+	posts: [],
+};
+
+export const PostsProvider = ({ children }: { children: ReactNode }) => {
+	// const [posts, setPosts] = useState<IPost[]>([]);
+	const [state, dispatch] = useReducer(postsReducer, initialState);
+	const [noMorePosts, setNoMorePosts] = useState<boolean>(false);
+
+	const setPostsFromSSR = useCallback((postsFromSSR: IPost[] = []) => {
+		dispatch({
+			type: PostTypes.ADD_POSTS,
+			payload: {
+				posts: postsFromSSR,
+			},
 		});
 	}, []);
 
@@ -84,15 +145,11 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
 				if (result && result.length < 5) {
 					setNoMorePosts(true);
 				}
-				setPosts((value) => {
-					const newPosts = [...value];
-					result?.forEach((post) => {
-						const exists = newPosts.find((item) => item._id === post._id);
-						if (!exists) {
-							newPosts.push(post);
-						}
-					});
-					return newPosts;
+				dispatch({
+					type: PostTypes.ADD_POSTS,
+					payload: {
+						posts: result || [],
+					},
 				});
 			}
 		},
@@ -100,20 +157,17 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
 	);
 
 	const deletePost = useCallback((postId: string) => {
-		setPosts((value) => {
-			const newPosts: IPost[] = [];
-			value.forEach((post) => {
-				if (post._id !== postId) {
-					newPosts.push(post);
-				}
-			});
-			return newPosts;
+		dispatch({
+			type: PostTypes.DELETE_POST,
+			payload: {
+				postId: postId,
+			},
 		});
 	}, []);
 
 	const value = {
 		noMorePosts,
-		posts,
+		posts: state.posts,
 		setPostsFromSSR,
 		getPosts,
 		deletePost,

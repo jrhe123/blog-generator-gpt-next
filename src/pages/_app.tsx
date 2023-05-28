@@ -1,10 +1,14 @@
 import "@/styles/globals.css";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
-import { ComponentType, ReactElement, ReactNode } from "react";
+import { ReactNode } from "react";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 // font
 import { DM_Sans, DM_Serif_Display } from "@next/font/google";
+// font awesome (prevent the font awesome icon sizing flashing issue)
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+config.autoAddCss = false;
 
 const dmSans = DM_Sans({
 	weight: ["400", "500", "700"],

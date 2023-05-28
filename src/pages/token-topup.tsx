@@ -35,11 +35,15 @@ const TokenTopup: NextPageWithLayout = (props) => {
 	};
 
 	return (
-		<div>
-			<p>token topup</p>
-			<button className="btn" onClick={handleAddToken}>
-				Add tokens
-			</button>
+		<div className="w-full h-full flex flex-col overflow-auto">
+			<div className="m-auto w-full max-w-screen-sm bg-slate-100 p-4 rounded-md shadow-xl border border-slate-200 shadow-slate-200">
+				<label className="block my-2">
+					<strong>Topup token</strong>
+				</label>
+				<button className="btn" onClick={handleAddToken}>
+					Add tokens
+				</button>
+			</div>
 		</div>
 	);
 };

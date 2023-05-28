@@ -33,11 +33,19 @@ const handler = async (
 ) => {
 	if (req.method !== "POST")
 		return res.status(405).json({ code: -1, message: "Method Not Allowed" });
+
 	const {
 		topic = "Nasdaq",
 		keywords = "top-gainers, top-losers, top U.S. stocks, monthly dividends",
 		cached = true,
 	}: { topic: string; keywords: string; cached: boolean } = req.body;
+
+	if (!topic || !keywords) {
+		return res.status(422);
+	}
+	if (topic.length > 50 || keywords.length > 50) {
+		return res.status(422);
+	}
 
 	try {
 		// auth0

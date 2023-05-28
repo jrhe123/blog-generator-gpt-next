@@ -13,8 +13,12 @@ type NextPageWithLayout = NextPage<ISuccessProps> & {
 
 const Success: NextPageWithLayout = (props) => {
 	return (
-		<div>
-			<p>Thank you for your purchase!</p>
+		<div className="w-full h-full flex flex-col overflow-auto">
+			<div className="m-auto w-full max-w-screen-sm bg-slate-100 p-4 rounded-md shadow-xl border border-slate-200 shadow-slate-200">
+				<label className="block my-2 text-center">
+					<strong>Thank you for your purchase!</strong>
+				</label>
+			</div>
 		</div>
 	);
 };

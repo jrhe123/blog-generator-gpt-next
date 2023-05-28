@@ -76,6 +76,7 @@ const NewPost: NextPageWithLayout = (props) => {
 							<textarea
 								className="resize-none border border-slate-500 w-full block my-2 px-4 py-2 rounded-sm"
 								value={topic}
+								maxLength={50}
 								onChange={(e) => setTopic(e.target.value)}
 							/>
 						</div>
@@ -86,6 +87,7 @@ const NewPost: NextPageWithLayout = (props) => {
 							<textarea
 								className="resize-none border border-slate-500 w-full block my-2 px-4 py-2 rounded-sm"
 								value={keywords}
+								maxLength={50}
 								onChange={(e) => setKeywords(e.target.value)}
 							/>
 							<small className="block mb-2">
@@ -95,7 +97,7 @@ const NewPost: NextPageWithLayout = (props) => {
 						<button
 							type="submit"
 							className="btn"
-							disabled={isLoading || !keywords || !topic}
+							disabled={isLoading || !keywords.trim() || !topic.trim()}
 						>
 							Generate
 						</button>
@@ -113,6 +115,14 @@ NewPost.getLayout = function getLayout(page, pageProps) {
 export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 	getServerSideProps: async (ctx) => {
 		const props = await getAppProps(ctx);
+		if (!props.availableTokens) {
+			return {
+				redirect: {
+					destination: "token-topup",
+					permanent: false,
+				},
+			};
+		}
 		return {
 			props,
 		};

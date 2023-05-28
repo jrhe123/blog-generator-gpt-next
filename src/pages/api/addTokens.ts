@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 // auth0
 import { getSession, Session, withApiAuthRequired } from "@auth0/nextjs-auth0";
-// mongo
-import clientPromise from "@/lib/mongodb";
 // stripe
 import stripeInit from "stripe";
 
@@ -27,25 +25,6 @@ const handler = async (
 		// auth0
 		const session = await getSession(req, res);
 		const { user } = session as Session;
-		// db
-		const client = await clientPromise;
-		const db = client.db("Blog");
-		const userProfile = await db.collection("users").updateOne(
-			{
-				auth0Id: user.sub,
-			},
-			{
-				$inc: {
-					availableTokens: 10,
-				},
-				$setOnInsert: {
-					auth0Id: user.sub,
-				},
-			},
-			{
-				upsert: true,
-			}
-		);
 		// stripe
 		const lineItems = [
 			{
@@ -60,6 +39,14 @@ const handler = async (
 			line_items: lineItems,
 			mode: "payment",
 			success_url: `${protocol}${host}/success`,
+			payment_intent_data: {
+				metadata: {
+					sub: user.sub,
+				},
+			},
+			metadata: {
+				sub: user.sub,
+			},
 		});
 		return res.status(200).json({
 			code: 0,

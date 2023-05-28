@@ -23,6 +23,15 @@ const TokenTopup: NextPageWithLayout = (props) => {
 			},
 			body: JSON.stringify({}),
 		});
+		const jsonResponse: {
+			code: number;
+			session: {
+				url: string;
+			};
+		} = await response.json();
+		if (jsonResponse.code === 0 && jsonResponse.session.url) {
+			window.location.href = jsonResponse.session.url;
+		}
 	};
 
 	return (

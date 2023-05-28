@@ -1,7 +1,7 @@
 ## Live demo (deprecated 2023/06/30)
 - https://blog-generator-gpt-next-9lu3.vercel.app
 
-### continue reading
+### Advanced version (continue reading)
 - https://github.com/jrhe123/gpt-next
 
 ### Auth0 login

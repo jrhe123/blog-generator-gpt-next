@@ -39,11 +39,18 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 }) => {
 	const { user } = useUser();
 	// context api
-	const { posts, setPostsFromSSR } = useContext(PostsContext);
+	const { posts, setPostsFromSSR, getPosts } = useContext(PostsContext);
 
 	useEffect(() => {
 		setPostsFromSSR(postsFromSSR);
 	}, [postsFromSSR, setPostsFromSSR]);
+
+	const handleLoadMore = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+		e.preventDefault();
+		getPosts({
+			lastPostDate: posts[posts.length - 1].created + "",
+		});
+	};
 
 	return (
 		<div className="grid grid-cols-[300px_1fr] h-screen max-h-screen">
@@ -70,7 +77,10 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 							{po.title}
 						</Link>
 					))}
-					<div className="mt-4 hover:underline text-sm text-slate-400 text-center cursor-pointer">
+					<div
+						onClick={handleLoadMore}
+						className="mt-4 hover:underline text-sm text-slate-400 text-center cursor-pointer"
+					>
 						Load more posts
 					</div>
 				</div>

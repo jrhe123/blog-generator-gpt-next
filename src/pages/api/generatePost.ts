@@ -43,7 +43,7 @@ const handler = async (
 	if (!topic || !keywords) {
 		return res.status(422);
 	}
-	if (topic.length > 50 || keywords.length > 50) {
+	if (topic.length > 80 || keywords.length > 80) {
 		return res.status(422);
 	}
 
@@ -109,7 +109,7 @@ const handler = async (
 			`limited to the following HTML tags: p, h1, h2, h3, h4, h5, h6, strong, li, ol, ul, i`;
 		const postContentResponse = await openAIApi.createChatCompletion({
 			model: "gpt-3.5-turbo",
-			temperature: 1,
+			temperature: 0,
 			max_tokens: 500,
 			messages: [
 				{
@@ -125,7 +125,7 @@ const handler = async (
 		const postContent = postContentResponse.data.choices[0].message?.content;
 		const titleContentResponse = await openAIApi.createChatCompletion({
 			model: "gpt-3.5-turbo",
-			temperature: 1,
+			temperature: 0,
 			max_tokens: 40,
 			messages: [
 				{
@@ -151,7 +151,7 @@ const handler = async (
 		const metaDescriptionContentResponse = await openAIApi.createChatCompletion(
 			{
 				model: "gpt-3.5-turbo",
-				temperature: 1,
+				temperature: 0,
 				max_tokens: 60,
 				messages: [
 					{

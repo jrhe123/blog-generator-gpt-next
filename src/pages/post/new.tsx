@@ -76,7 +76,7 @@ const NewPost: NextPageWithLayout = (props) => {
 							<textarea
 								className="resize-none border border-slate-500 w-full block my-2 px-4 py-2 rounded-sm"
 								value={topic}
-								maxLength={50}
+								maxLength={80}
 								onChange={(e) => setTopic(e.target.value)}
 							/>
 						</div>
@@ -87,7 +87,7 @@ const NewPost: NextPageWithLayout = (props) => {
 							<textarea
 								className="resize-none border border-slate-500 w-full block my-2 px-4 py-2 rounded-sm"
 								value={keywords}
-								maxLength={50}
+								maxLength={80}
 								onChange={(e) => setKeywords(e.target.value)}
 							/>
 							<small className="block mb-2">

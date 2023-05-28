@@ -21,4 +21,4 @@
 
 ### deploy
 
-- digital ocean
+- vercel

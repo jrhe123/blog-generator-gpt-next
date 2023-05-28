@@ -1,6 +1,7 @@
 ### docker
 
 - mongodb
+- mongo atlas (move to cloud)
 
 ### auth
 
@@ -17,3 +18,7 @@
 - cli create endpointSecret:
   - /stripe login
   - /stripe listen --forward-to localhost:3000/api/webhooks/stripe
+
+### deploy
+
+- digital ocean

@@ -9,8 +9,11 @@ import { AppLayout } from "../../components/layout";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import getAppProps from "@/utils/getAppProps";
+// router
+import { useRouter } from "next/router";
 
 interface IPostDetailProps {
+	postId: string;
 	postContent: string;
 	title: string;
 	metaDescription: string;
@@ -23,6 +26,32 @@ type NextPageWithLayout = NextPage<IPostDetailProps> & {
 };
 
 const PostDetail: NextPageWithLayout = (props) => {
+	const router = useRouter();
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+
+	const handleDeleteConfirm = async (
+		e: React.MouseEvent<HTMLElement, MouseEvent>
+	) => {
+		e.preventDefault();
+		try {
+			const response = await fetch(`/api/deletePost`, {
+				method: "POST",
+				headers: {
+					"content-type": "application/json",
+				},
+				body: JSON.stringify({
+					postId: props.postId,
+				}),
+			});
+			const jsonResponse: {
+				code: number;
+			} = await response.json();
+			if (jsonResponse.code === 0) {
+				router.replace("/post/new");
+			}
+		} catch (error) {}
+	};
+
 	return (
 		<div className="overflow-auto h-full">
 			<div className="max-w-screen-sm mx-auto">
@@ -56,6 +85,35 @@ const PostDetail: NextPageWithLayout = (props) => {
 						__html: props.postContent || "",
 					}}
 				/>
+				<div className="my-4">
+					{!showDeleteConfirm && (
+						<button
+							onClick={() => setShowDeleteConfirm(true)}
+							className="btn bg-red-600 hover:bg-red-700"
+						>
+							Delete post
+						</button>
+					)}
+					{showDeleteConfirm && (
+						<div className="p-2 bg-red-300 text-center">
+							<p>Are you sure want to delete this post?</p>
+							<div className="grid grid-cols-2 gap-2">
+								<button
+									onClick={() => setShowDeleteConfirm(false)}
+									className="btn bg-stone-600 hover:bg-stone-700"
+								>
+									cancel
+								</button>
+								<button
+									onClick={handleDeleteConfirm}
+									className="btn bg-red-600 hover:bg-red-700"
+								>
+									confirm delete
+								</button>
+							</div>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);
@@ -89,6 +147,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 		}
 		return {
 			props: {
+				postId: ctx.params?.postId,
 				postContent: post.postContent,
 				title: post.title,
 				metaDescription: post.metaDescription,

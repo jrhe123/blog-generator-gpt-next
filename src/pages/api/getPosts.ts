@@ -30,7 +30,7 @@ const handler = async (
 	if (req.method !== "POST")
 		return res.status(405).json({ code: -1, message: "Method Not Allowed" });
 
-	const { lastPostDate } = req.body;
+	const { lastPostDate, getNewerPosts } = req.body;
 	if (!lastPostDate) {
 		return res.status(422);
 	}
@@ -51,10 +51,10 @@ const handler = async (
 			.find({
 				userId: userProfile?._id,
 				created: {
-					$lt: new Date(lastPostDate),
+					[getNewerPosts ? "$gt" : "$lt"]: new Date(lastPostDate),
 				},
 			})
-			.limit(5)
+			.limit(getNewerPosts ? 0 : 5)
 			.sort({
 				created: -1,
 			})

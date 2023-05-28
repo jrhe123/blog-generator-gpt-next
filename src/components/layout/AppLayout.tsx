@@ -23,6 +23,7 @@ interface IAppLayoutProps {
 		_id: string;
 	}[];
 	postId: string | null;
+	created: string;
 }
 
 /**
@@ -36,6 +37,7 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 	availableTokens,
 	posts: postsFromSSR,
 	postId,
+	created,
 }) => {
 	const { user } = useUser();
 	// context api
@@ -44,12 +46,22 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 
 	useEffect(() => {
 		setPostsFromSSR(postsFromSSR);
-	}, [postsFromSSR, setPostsFromSSR]);
+		if (postId) {
+			const exists = postsFromSSR.find((item) => item._id === postId);
+			if (!exists && created) {
+				getPosts({
+					lastPostDate: created,
+					getNewerPosts: true,
+				});
+			}
+		}
+	}, [postsFromSSR, setPostsFromSSR, postId, created, getPosts]);
 
 	const handleLoadMore = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		e.preventDefault();
 		getPosts({
 			lastPostDate: posts[posts.length - 1].created + "",
+			getNewerPosts: false,
 		});
 	};
 

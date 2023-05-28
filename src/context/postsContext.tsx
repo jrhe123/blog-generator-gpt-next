@@ -17,13 +17,19 @@ type IPostsContextType = {
 	noMorePosts: boolean;
 	posts: IPost[];
 	setPostsFromSSR: (postsFromSSR: IPost[]) => void;
-	getPosts: ({ lastPostDate }: { lastPostDate: string }) => Promise<void>;
+	getPosts: ({
+		lastPostDate,
+		getNewerPosts,
+	}: {
+		lastPostDate: string;
+		getNewerPosts: boolean;
+	}) => Promise<void>;
 };
 const postsContextDefaultValues: IPostsContextType = {
 	noMorePosts: false,
 	posts: [],
 	setPostsFromSSR: (postsFromSSR) => {},
-	getPosts: async ({ lastPostDate }) => {},
+	getPosts: async ({ lastPostDate, getNewerPosts }) => {},
 };
 
 const PostsContext = React.createContext<IPostsContextType>(
@@ -50,7 +56,13 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
 	}, []);
 
 	const getPosts = useCallback(
-		async ({ lastPostDate }: { lastPostDate: string }) => {
+		async ({
+			lastPostDate,
+			getNewerPosts = false,
+		}: {
+			lastPostDate: string;
+			getNewerPosts: boolean;
+		}) => {
 			const result = await fetch(`/api/getPosts`, {
 				method: "POST",
 				headers: {
@@ -58,6 +70,7 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
 				},
 				body: JSON.stringify({
 					lastPostDate,
+					getNewerPosts,
 				}),
 			});
 			const jsonResponse: {

@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCoins } from "@fortawesome/free-solid-svg-icons";
 //
 import { Logo } from "../logo";
+// context api
+import { useContext, useEffect } from "react";
+import PostsContext from "@/context/postsContext";
 
 interface IAppLayoutProps {
 	children: React.ReactNode;
@@ -31,10 +34,17 @@ interface IAppLayoutProps {
 export const AppLayout: NextPage<IAppLayoutProps> = ({
 	children,
 	availableTokens,
-	posts,
+	posts: postsFromSSR,
 	postId,
 }) => {
 	const { user } = useUser();
+	// context api
+	const { posts, setPostsFromSSR } = useContext(PostsContext);
+
+	useEffect(() => {
+		setPostsFromSSR(postsFromSSR);
+	}, [postsFromSSR, setPostsFromSSR]);
+
 	return (
 		<div className="grid grid-cols-[300px_1fr] h-screen max-h-screen">
 			<div className="flex flex-col text-white overflow-hidden">
@@ -60,6 +70,9 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 							{po.title}
 						</Link>
 					))}
+					<div className="mt-4 hover:underline text-sm text-slate-400 text-center cursor-pointer">
+						Load more posts
+					</div>
 				</div>
 				<div className="bg-cyan-800 flex items-center gap-2 border-t border-t-black/50 h-20 px-2">
 					{!!user ? (

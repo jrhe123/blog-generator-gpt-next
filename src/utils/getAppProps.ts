@@ -30,6 +30,7 @@ const getAppProps = async (
 		.find({
 			userId: userProfile._id,
 		})
+		.limit(5)
 		.sort({
 			created: -1,
 		})

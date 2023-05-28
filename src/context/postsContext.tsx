@@ -24,12 +24,14 @@ type IPostsContextType = {
 		lastPostDate: string;
 		getNewerPosts: boolean;
 	}) => Promise<void>;
+	deletePost: (postId: string) => void;
 };
 const postsContextDefaultValues: IPostsContextType = {
 	noMorePosts: false,
 	posts: [],
 	setPostsFromSSR: (postsFromSSR) => {},
 	getPosts: async ({ lastPostDate, getNewerPosts }) => {},
+	deletePost: (postId) => {},
 };
 
 const PostsContext = React.createContext<IPostsContextType>(
@@ -97,11 +99,24 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
 		[]
 	);
 
+	const deletePost = useCallback((postId: string) => {
+		setPosts((value) => {
+			const newPosts: IPost[] = [];
+			value.forEach((post) => {
+				if (post._id !== postId) {
+					newPosts.push(post);
+				}
+			});
+			return newPosts;
+		});
+	}, []);
+
 	const value = {
 		noMorePosts,
 		posts,
 		setPostsFromSSR,
 		getPosts,
+		deletePost,
 	};
 
 	return (

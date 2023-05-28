@@ -1,5 +1,5 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { ReactNode, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { Session, getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHashtag } from "@fortawesome/free-solid-svg-icons";
@@ -11,6 +11,8 @@ import { ObjectId } from "mongodb";
 import getAppProps from "@/utils/getAppProps";
 // router
 import { useRouter } from "next/router";
+//
+import PostsContext from "@/context/postsContext";
 
 interface IPostDetailProps {
 	postId: string;
@@ -28,6 +30,7 @@ type NextPageWithLayout = NextPage<IPostDetailProps> & {
 const PostDetail: NextPageWithLayout = (props) => {
 	const router = useRouter();
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+	const { deletePost } = useContext(PostsContext);
 
 	const handleDeleteConfirm = async (
 		e: React.MouseEvent<HTMLElement, MouseEvent>
@@ -47,6 +50,7 @@ const PostDetail: NextPageWithLayout = (props) => {
 				code: number;
 			} = await response.json();
 			if (jsonResponse.code === 0) {
+				deletePost(props.postId);
 				router.replace("/post/new");
 			}
 		} catch (error) {}

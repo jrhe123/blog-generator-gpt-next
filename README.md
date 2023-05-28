@@ -1,4 +1,4 @@
-## Live demo
+## Live demo (deprecated 2023/06/30)
 - https://blog-generator-gpt-next-9lu3.vercel.app
 
 ### Auth0 login

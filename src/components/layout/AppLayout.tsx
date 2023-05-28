@@ -59,6 +59,7 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 
 	const handleLoadMore = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		e.preventDefault();
+		if (!posts.length) return;
 		getPosts({
 			lastPostDate: posts[posts.length - 1].created + "",
 			getNewerPosts: false,
@@ -70,7 +71,12 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 			<div className="flex flex-col text-white overflow-hidden">
 				<div className="bg-slate-800 px-2">
 					<Logo />
-					<Link href={"/post/new"} className="btn">
+					<Link
+						href={"/post/new"}
+						className={`btn ${
+							!availableTokens ? "bg-green-200 cursor-not-allowed" : ""
+						}`}
+					>
 						New Post
 					</Link>
 					<Link href={"/token-topup"} className="block mt-2 text-center">
@@ -90,14 +96,14 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 							{po.title}
 						</Link>
 					))}
-					{!noMorePosts && (
+					{!noMorePosts && posts.length ? (
 						<div
 							onClick={handleLoadMore}
 							className="mt-4 hover:underline text-sm text-slate-400 text-center cursor-pointer"
 						>
 							Load more posts
 						</div>
-					)}
+					) : null}
 				</div>
 				<div className="bg-cyan-800 flex items-center gap-2 border-t border-t-black/50 h-20 px-2">
 					{!!user ? (

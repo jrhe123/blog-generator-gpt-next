@@ -14,11 +14,13 @@ type IPost = {
 	created?: string;
 };
 type IPostsContextType = {
+	noMorePosts: boolean;
 	posts: IPost[];
 	setPostsFromSSR: (postsFromSSR: IPost[]) => void;
 	getPosts: ({ lastPostDate }: { lastPostDate: string }) => Promise<void>;
 };
 const postsContextDefaultValues: IPostsContextType = {
+	noMorePosts: false,
 	posts: [],
 	setPostsFromSSR: (postsFromSSR) => {},
 	getPosts: async ({ lastPostDate }) => {},
@@ -32,9 +34,19 @@ export default PostsContext;
 
 export const PostsProvider = ({ children }: { children: ReactNode }) => {
 	const [posts, setPosts] = useState<IPost[]>([]);
+	const [noMorePosts, setNoMorePosts] = useState<boolean>(false);
 
 	const setPostsFromSSR = useCallback((postsFromSSR: IPost[] = []) => {
-		setPosts(postsFromSSR);
+		setPosts((value) => {
+			const newPosts = [...value];
+			postsFromSSR.forEach((post) => {
+				const exists = newPosts.find((item) => item._id === post._id);
+				if (!exists) {
+					newPosts.push(post);
+				}
+			});
+			return newPosts;
+		});
 	}, []);
 
 	const getPosts = useCallback(
@@ -54,6 +66,9 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
 			} = await result.json();
 			if (jsonResponse.code === 0) {
 				const result = jsonResponse.posts;
+				if (result && result.length < 5) {
+					setNoMorePosts(true);
+				}
 				setPosts((value) => {
 					const newPosts = [...value];
 					result?.forEach((post) => {
@@ -70,6 +85,7 @@ export const PostsProvider = ({ children }: { children: ReactNode }) => {
 	);
 
 	const value = {
+		noMorePosts,
 		posts,
 		setPostsFromSSR,
 		getPosts,

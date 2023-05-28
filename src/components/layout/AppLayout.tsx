@@ -39,7 +39,8 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 }) => {
 	const { user } = useUser();
 	// context api
-	const { posts, setPostsFromSSR, getPosts } = useContext(PostsContext);
+	const { noMorePosts, posts, setPostsFromSSR, getPosts } =
+		useContext(PostsContext);
 
 	useEffect(() => {
 		setPostsFromSSR(postsFromSSR);
@@ -77,12 +78,14 @@ export const AppLayout: NextPage<IAppLayoutProps> = ({
 							{po.title}
 						</Link>
 					))}
-					<div
-						onClick={handleLoadMore}
-						className="mt-4 hover:underline text-sm text-slate-400 text-center cursor-pointer"
-					>
-						Load more posts
-					</div>
+					{!noMorePosts && (
+						<div
+							onClick={handleLoadMore}
+							className="mt-4 hover:underline text-sm text-slate-400 text-center cursor-pointer"
+						>
+							Load more posts
+						</div>
+					)}
 				</div>
 				<div className="bg-cyan-800 flex items-center gap-2 border-t border-t-black/50 h-20 px-2">
 					{!!user ? (

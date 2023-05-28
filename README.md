@@ -2,16 +2,14 @@
 - https://blog-generator-gpt-next-9lu3.vercel.app
 
 ### Auth0 login
-![May-28-2023 01-48-31](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/23750af4-6684-4021-8669-bcd281719e1c)
+![May-28-2023 11-32-37](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/40c6d72f-1345-4255-ba10-731d4dcc6206)
 
 ### Stripe top up your tokens
-![May-28-2023 01-49-31](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/6eb31d14-d6ab-4a14-88e2-8f882f273d27)
+![May-28-2023 11-32-24](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/4dafe935-6865-4124-a558-77d1c2ea3e0a)
 
 ### OpenAI generate content
-![May-28-2023 01-50-40](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/662e4a26-0548-4313-9718-51f3f7ad150b)
+![May-28-2023 11-35-36](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/db6b2408-3ce2-49ed-aad0-53f069c3583a)
 
 ### Database persistence
-![May-28-2023 01-50-58](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/4d3a96b5-629e-49ed-9802-5b789adff3a4)
-
-
+![May-28-2023 11-41-41](https://github.com/jrhe123/blog-generator-gpt-next/assets/17329299/048300d7-7fc7-40ac-925d-29a8fbef183e)
 
